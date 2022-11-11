@@ -29,4 +29,4 @@ const productos = [
         precio: 100,
         img: "https://images.pexels.com/photos/9505107/pexels-photo-9505107.jpeg?auto=compress&cs=tinysrgb&w=600",
     },
-];
+]

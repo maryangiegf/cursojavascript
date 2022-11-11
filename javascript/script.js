@@ -1,10 +1,17 @@
+
+
+let reservas = JSON.parse(localStorage.getItem("cart")) || [];
+
 const shopContent = document.getElementById("shopContent");
 const verCarrito = document.getElementById("verCarrito");
 const modalContainer = document.getElementById("modal-container");
 
-let carrito = JSON.parse(localStorage.getItem("cart")) || [];
 
-productos.forEach((product) => {
+let carrito = document.querySelector("#shop-content")
+fetch("../data.json")
+.then((response) => response.json())
+.then((data) => {
+    data.forEach((product) => {
     let content = document.createElement("div");
     content.className = "card"
     content.innerHTML = `
@@ -21,16 +28,35 @@ productos.forEach((product) => {
     content.append(reservar);
 
     reservar.addEventListener('click', () => {
-        carrito.push({
+        const repeat = reservas.some((repeatProduct) => repeatProduct.id === product.id);
+        if(repeat){
+            reservas.map((prod) => {
+                if (prod.id === product.id) {
+                    prod.cantidad++;
+                }
+            });
+        } else {
+        reservas.push({
             id: product.id,
             img: product.img,
             nombre: product.nombre,
             precio: product.precio,
+            cantidad: product.cantidad,
         });
-        console.log(carrito);
-        saveLocal();
+        } 
+        Toastify({ 
+            text: "Reservaste esta visita",
+            className: "info",
+            style: {
+            background: "#7319bd",
+            }
+        }).showToast(); 
+    guardarLocal();  
     });
-}); 
+});
+})
+
+
 
 verCarrito.addEventListener("click", () => {
     modalContainer.innerHTML = "";
@@ -52,7 +78,7 @@ verCarrito.addEventListener("click", () => {
 
     modalHeader.append(modalButton);
 
-    carrito.forEach((product) => {
+    reservas.forEach((product) => {
         let carritoContent = document.createElement("div");
         carritoContent.className = "modal-content"
         carritoContent.innerHTML = `
@@ -65,14 +91,29 @@ verCarrito.addEventListener("click", () => {
 
     });
 
-    const total = carrito.reduce((acumulador, elemento) => acumulador + elemento.precio, 0);
+    const total = reservas.reduce((acumulador, elemento) => acumulador + elemento.precio, 0);
 
     const totalBuying =document.createElement("div");
     totalBuying.className = "total-content"
     totalBuying.innerHTML = `Total:€${total} `;
 
     modalContainer.append(totalBuying);
+
+
+
+
 });
-const saveLocal = () =>{
-    localStorage.setItem("cart", JSON.stringify(carrito));
+const guardarLocal = () =>{
+    localStorage.setItem("cart", JSON.stringify(reservas));
 };
+
+
+
+
+
+
+
+
+
+
+
